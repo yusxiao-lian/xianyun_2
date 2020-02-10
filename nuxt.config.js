@@ -5,7 +5,7 @@ export default {
   ** Headers of the page
   */
   head: {
-    title: process.env.npm_package_name || '',
+    title: '闲云旅游网',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -23,7 +23,8 @@ export default {
   ** Global CSS
   */
   css: [
-    'element-ui/lib/theme-chalk/index.css'
+    'element-ui/lib/theme-chalk/index.css',
+    'assets/main.css'  //新增页面过渡样式
   ],
   /*
   ** Plugins to load before mounting the App
@@ -48,6 +49,8 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    // baseURL: "http://157.122.54.189:9095" // 新增备用地址(线上服务器地址)
+    baseURL: "http://127.0.0.1:1337" // 新增axios默认请求路径 
   },
   /*
   ** Build configuration
