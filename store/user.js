@@ -14,7 +14,19 @@ export const mutations = {
     setUserInfo (state, data) {
         state.userInfo = data
     }
-};
+}
 
 // 固定的属性，异步修改state中的值的方法，一般存放接口的请求的
-export const actions = {};
+export const actions = {
+    // 第一个参数必须是store
+    login (store, data) {
+        return this.$axios({
+            url: '/accounts/login',
+            method: 'POST',
+            data: data
+        }).then((res) => {
+           let data = res.data
+           store.commit('setUserInfo', data)
+        })
+    }
+}

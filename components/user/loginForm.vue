@@ -55,17 +55,29 @@ export default {
            this.$refs.form.validate( (valid) => {
                // 如果通过了表单的验证规则，才提交登录
                if (valid) {
-                    this.$axios({
-                        url: '/accounts/login',
-                        method: 'POST',
-                        data: this.form
-                    }).then((res) => {
-                        console.log(res)
-                        let data = res.data
-                        // 通过commit调用store中的mutations方法把数据存到store中
-                        this.$store.commit('user/setUserInfo', data)
-                        // 用this.$store.state.user.userInfo的格式来获取store中的数据
-                        // console.log(this.$store.state.user.userInfo.token)
+                    // this.$axios({
+                    //     url: '/accounts/login',
+                    //     method: 'POST',
+                    //     data: this.form
+                    // }).then((res) => {
+                    //     console.log(res)
+                    //     let data = res.data
+                    //     // 通过commit调用store中的mutations方法把数据存到store中
+                    //     this.$store.commit('user/setUserInfo', data)
+                    //     // 用this.$store.state.user.userInfo的格式来获取store中的数据
+                    //     // console.log(this.$store.state.user.userInfo.token)
+
+                    // })
+
+                    // 封装
+                    // 通过dispatch调用action中的方法
+                    this.$store.dispatch('user/login', this.form).then(() => {
+                        this.$message({
+                            message: '登录成功',
+                            type: 'success',
+                            duration: 2000
+                        })
+                        this.$router.push('/')
                     })
                }
            })

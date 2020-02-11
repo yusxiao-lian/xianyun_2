@@ -49,8 +49,9 @@
 <script>
 export default {
     methods: {
+        // 退出登录
         handleLogout () {
-            console.log(11)
+            this.$store.commit('user/setUserInfo', '')
         }
     }
 }
