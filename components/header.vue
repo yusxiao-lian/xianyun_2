@@ -17,7 +17,27 @@
 
         <!-- login -->
         <el-row>
-            <nuxt-link to="/user/login">登录/注册</nuxt-link>
+           <!-- 如果用户存在则展示用户信息，用户数据来自store -->
+                <el-dropdown v-if="$store.state.user.userInfo.token">
+                    <el-row type="flex" align="middle" class="el-dropdown-link">
+                        <nuxt-link to="#">
+                            <img :src="$axios.defaults.baseURL + $store.state.user.userInfo.user.defaultAvatar"/>
+                            {{$store.state.user.userInfo.user.nickname}}
+                        </nuxt-link>
+                        <i class="el-icon-caret-bottom el-icon--right"></i>
+                    </el-row>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>
+                           <nuxt-link to="#">个人中心</nuxt-link>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                            <div @click="handleLogout">退出</div> 
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+
+            <!-- 如果用户还未登录 -->
+            <nuxt-link to="/user/login" v-else>登录/注册</nuxt-link>
         </el-row>
     </el-row>
 
@@ -28,7 +48,11 @@
 
 <script>
 export default {
-
+    methods: {
+        handleLogout () {
+            console.log(11)
+        }
+    }
 }
 </script>
 
