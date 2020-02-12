@@ -51,7 +51,10 @@ export default {
     methods: {
         // 退出登录
         handleLogout () {
-            this.$store.commit('user/setUserInfo', '')
+            this.$store.commit('user/setUserInfo', {
+                token: "",
+                user: {}  // 要使用对象
+            })
         }
     }
 }

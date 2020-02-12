@@ -18,6 +18,7 @@ export const mutations = {
 
 // 固定的属性，异步修改state中的值的方法，一般存放接口的请求的
 export const actions = {
+    // 登录
     // 第一个参数必须是store
     login (store, data) {
         return this.$axios({
@@ -27,6 +28,33 @@ export const actions = {
         }).then((res) => {
            let data = res.data
            store.commit('setUserInfo', data)
+        })
+    },
+
+    // 获取验证码
+    getCaptcha (store, tel) {
+        return this.$axios({
+            url: '/captchas',
+            method: 'POST',
+            data: {
+                tel: tel
+            }
+        }).then((res) => {
+            return res;
+        })
+    },
+
+    // 注册
+    register (store, data) {
+        return this.$axios({
+            url: '/accounts/register',
+            method: 'POST',
+            data
+        }).then((res) => {
+            // 注册成功后把值存到store，然后登录跳转到首页
+            let { data } =res
+            store.commit('setUserInfo', res.data)
+            return res;
         })
     }
 }
