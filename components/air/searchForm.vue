@@ -40,7 +40,8 @@
                 style="width: 100%;"
                 @change="handleDate"
                 v-model="form.departDate"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd"
+                :picker-options="pickerOptions">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="">
@@ -60,6 +61,8 @@
 </template>
 
 <script>
+// 时间格式转换包
+import moment from "moment";
 export default {
     data(){
         return {
@@ -78,19 +81,32 @@ export default {
             },
             // 模糊搜索数据合集
             departCitys: [],
-            destCitys: []
+            destCitys: [],
+
+            // 日期配置
+            pickerOptions: {
+                // true为可选日期
+                disabledDate(time) {
+                    return time.getTime() + 3600 * 1000 * 24 < Date.now();
+                }
+            }
         }
     },
     methods: {
         // tab切换时触发
         handleSearchTab(item, index){
-            
+            this.$alert('暂不支持往返机票，请选择单程票', '温馨提示', {
+                confirmButtonText: '确定'
+            })
         },
         
         // 出发城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
         queryDepartSearch(value, cb){
             if (!value) {
+                // 如果没输入值时则不出先空选项
+                this.departCitys = []
+                cb([])
                 return;
             }
             // value为input框输入的值
@@ -116,6 +132,9 @@ export default {
         // value 是选中的值，cb是回调函数，接收要展示的列表
         queryDestSearch(value, cb){
             if (!value) {
+                 // 如果没输入值时则不出先空选项
+                this.destCitys = []
+                cb([])
                 return;
             }
            this.$axios({
@@ -159,7 +178,11 @@ export default {
 
         // 触发和目标城市切换时触发
         handleReverse(){
-            
+            let { departCity, departCode, destCity, destCode } = this.form
+            this.form.departCity = destCity
+            this.form.departCode = destCode
+            this.form.destCity = departCity
+            this.form.destCode = departCode
         },
 
         // 如果用户不选择则默认再失焦时选第一个数据
@@ -168,8 +191,15 @@ export default {
             if (this.departCitys.length === 0) {
                 return;
             }
-            this.form.departCity = this.departCitys[0].value
-            this.form.departCode = this.departCitys[0].sort
+            // 防空字段撤回取值
+            if (this.form.departCity === '') {
+                this.departCitys = []
+            }
+
+            if (this.departCitys.length !== 0) {
+                this.form.departCity = this.departCitys[0].value
+                this.form.departCode = this.departCitys[0].sort
+            }
         },
 
         // 目标城市
@@ -177,12 +207,33 @@ export default {
             if (this.destCitys.length === 0) {
                 return;
             }
-            this.form.destCity = this.destCitys[0].value
-            this.form.destCode = this.destCitys[0].sort
+            // 防空字段撤回取值
+            if (this.form.destCity === '') {
+                this.destCitys = []
+            }
+            if (this.destCitys.length !== 0) {
+                this.form.destCity = this.destCitys[0].value
+                this.form.destCode = this.destCitys[0].sort
+            }
         },
 
         // 提交表单是触发
         handleSubmit(){
+            // 验证字段是否为空
+            if(!this.form.departCity){
+                this.$message.error("请输入出发城市");
+                return;
+            }
+
+            if(!this.form.destCity){
+                this.$message.error("请输入到达城市");
+                return;
+            }
+
+            if(!this.form.departDate){
+                this.$message.error("请选择时间");
+                return;
+            }
            console.log(this.form)
            this.$router.push({
                path: "/air/flights",
