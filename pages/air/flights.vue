@@ -5,9 +5,7 @@
             <!-- 顶部过滤列表 -->
             <div class="flights-content">
                 <!-- 过滤条件 -->
-                <div>
-                    
-                </div>
+                <FlightsFilters :data='flightsData' @getFilterData='getFilterData'></FlightsFilters>
                 
                 <!-- 航班头部布局 -->
                 <FlightsListHead></FlightsListHead>
@@ -41,6 +39,7 @@
 <script>
 import FlightsListHead from '@/components/air/flightsListHead'
 import FlightsItem from "@/components/air/flightsItem.vue"
+import FlightsFilters from "@/components/air/flightsFilters.vue"
 import moment from "moment";
 
 export default {
@@ -58,7 +57,7 @@ export default {
             pagesize: 2
         }
     },
-    components: { FlightsListHead, FlightsItem},
+    components: { FlightsListHead, FlightsItem, FlightsFilters },
     mounted () {
         // console.log(this.$route.query) // 获取地址栏参数
         // 获取航班所有信息
@@ -68,6 +67,7 @@ export default {
         }).then((res) => {
             console.log(res)
             this.flightsData = res.data
+            
         })
     },
     methods: {
@@ -81,10 +81,21 @@ export default {
             // 通过value能得到当前页码，用来计算分页数据
             // console.log(value)
             this.currentPage = value
+        },
+
+        // 晒选数据
+        getFilterData (value) {
+            // console.log(value)
+            this.flightsData.flights = value
+            this.flightsData.total = value.length
         }
     },
     computed: {
         flightList () {
+            if(!this.flightsData.flights){
+                // 没有值返回一个空数组
+                return [];
+            }
             // 1 0-4 2 4-8 3 8-12 4 12-16
             // slice(start, end)为从数组中选出开始到结束的数据的方法,不包括结束
             let List = this.flightsData.flights.slice((this.currentPage-1)*this.pagesize, this.currentPage*this.pagesize)
