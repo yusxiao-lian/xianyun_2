@@ -234,7 +234,7 @@ export default {
                 this.$message.error("请选择时间");
                 return;
             }
-           console.log(this.form)
+            //    console.log(this.form)
            this.$router.push({
                path: "/air/flights",
                query: this.form
