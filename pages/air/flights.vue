@@ -5,7 +5,7 @@
             <!-- 顶部过滤列表 -->
             <div class="flights-content">
                 <!-- 过滤条件 -->
-                <FlightsFilters :data='flightsData' @getFilterData='getFilterData'></FlightsFilters>
+                <FlightsFilters :data='cacheData' @getFilterData='getFilterData'></FlightsFilters>
                 
                 <!-- 航班头部布局 -->
                 <FlightsListHead></FlightsListHead>
@@ -52,9 +52,15 @@ export default {
             },
             // 当前页
             currentPage: 1,
-
             // 每页展示条数
-            pagesize: 2
+            pagesize: 2,
+
+            // 缓存数据备份
+            cacheData: {
+                info: {},
+                flights: [],
+                options: {}
+            }
         }
     },
     components: { FlightsListHead, FlightsItem, FlightsFilters },
@@ -67,7 +73,8 @@ export default {
         }).then((res) => {
             console.log(res)
             this.flightsData = res.data
-            
+            // 复制增加缓存数据,结构赋值
+            this.cacheData = { ...res.data }
         })
     },
     methods: {
@@ -83,7 +90,7 @@ export default {
             this.currentPage = value
         },
 
-        // 晒选数据
+        // 晒选过滤数据
         getFilterData (value) {
             // console.log(value)
             this.flightsData.flights = value
@@ -93,7 +100,7 @@ export default {
     computed: {
         flightList () {
             if(!this.flightsData.flights){
-                // 没有值返回一个空数组
+                // 没有值就返回一个空数组
                 return [];
             }
             // 1 0-4 2 4-8 3 8-12 4 12-16
