@@ -219,7 +219,7 @@ export default {
 
         // 提交表单是触发
         handleSubmit(){
-            // 验证字段是否为空
+            // 提交前先验证字段是否为空
             if(!this.form.departCity){
                 this.$message.error("请输入出发城市");
                 return;
@@ -235,6 +235,8 @@ export default {
                 return;
             }
             //    console.log(this.form)
+            // 存储搜索历史记录到vuex
+            this.$store.commit('air/setHistorySearch', this.form)
            this.$router.push({
                path: "/air/flights",
                query: this.form

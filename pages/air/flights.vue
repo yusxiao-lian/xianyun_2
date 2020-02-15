@@ -29,9 +29,7 @@
             </div>
 
             <!-- 侧边栏 -->
-            <div class="aside">
-                <!-- 侧边栏组件 -->
-            </div>
+            <FlightsAside></FlightsAside>
         </el-row>
     </section>
 </template>
@@ -40,6 +38,7 @@
 import FlightsListHead from '@/components/air/flightsListHead'
 import FlightsItem from "@/components/air/flightsItem.vue"
 import FlightsFilters from "@/components/air/flightsFilters.vue"
+import FlightsAside from "@/components/air/flightsAside.vue"
 import moment from "moment";
 
 export default {
@@ -63,19 +62,11 @@ export default {
             }
         }
     },
-    components: { FlightsListHead, FlightsItem, FlightsFilters },
+    components: { FlightsListHead, FlightsItem, FlightsFilters, FlightsAside },
     mounted () {
         // console.log(this.$route.query) // 获取地址栏参数
         // 获取航班所有信息
-        this.$axios({
-            url: '/airs',
-            params: this.$route.query
-        }).then((res) => {
-            console.log(res)
-            this.flightsData = res.data
-            // 复制增加缓存数据,结构赋值
-            this.cacheData = { ...res.data }
-        })
+        this.getDataList()
     },
     methods: {
         // 切换每页多少条时触发
@@ -90,11 +81,25 @@ export default {
             this.currentPage = value
         },
 
-        // 晒选过滤数据
+        // 筛选过滤数据
         getFilterData (value) {
             // console.log(value)
             this.flightsData.flights = value
             this.flightsData.total = value.length
+        },
+
+        // 封装获取数据列表
+        getDataList () {
+            // console.log(this.$route.query) // 获取地址栏参数
+            this.$axios({
+                url: '/airs',
+                params: this.$route.query
+            }).then((res) => {
+                console.log(res)
+                this.flightsData = res.data
+                // 复制增加缓存数据,结构赋值
+                this.cacheData = { ...res.data }
+            })
         }
     },
     computed: {
@@ -108,6 +113,26 @@ export default {
             let List = this.flightsData.flights.slice((this.currentPage-1)*this.pagesize, this.currentPage*this.pagesize)
             return List
         }
+    },
+    // watch: {
+    //     // 监听路由变化，发生变化则重新加载数据
+    //     // watch可以监听实例下任何属性的变化
+    //     $route () {
+    //         // 重置页码为1
+    //         this.currentPage = 1;
+    //         // 重新加载数据
+    //         this.getDataList()
+    //     }
+    // },
+
+    // 当前页的导航守卫,当当前页面路由发生改变时执行
+    // next 必须要调用
+     beforeRouteUpdate (to, from, next) {
+        // 重置页码为1
+        this.currentPage = 1;
+        // 请求机票列表数据
+        this.getDataList()
+        next();
     }
 }
 </script>

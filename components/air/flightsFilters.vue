@@ -159,7 +159,7 @@ export default {
                         status = false
                     }
                 }
-                // retrun出true的数据,过滤false的数据,满足条件为false则把这条数据返回给新数组
+                // retrun出true的数据,过滤false的数据,满足条件为true则把这条数据返回给新数组
                 return status;
             })
             // 传递参数
