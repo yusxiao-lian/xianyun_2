@@ -64,7 +64,8 @@
                             </template>
                         </el-input>
                     </el-form-item>
-
+                    <!-- 计算属性 -->
+                    <span>{{Totalprice}}</span>
                     <el-form-item label="验证码">
                         <el-input v-model="form.captcha"></el-input>
                     </el-form-item>
@@ -218,11 +219,35 @@ export default {
         let seat_xid = this.$route.query.seat_xid
         this.$axios({
             url: `/airs/${airsid}`,
-            params: seat_xid
+            params: {seat_xid}
         }).then((res) => {
-            console.log(res)
+            console.log(res.data)
             this.filghtInfo = res.data
+            // 保存航班信息到store
+            this.$store.commit("air/setOrderDetail", this.filghtInfo)
         })
+    },
+    computed: {
+        // 计算机票总价
+        Totalprice () {
+            if (!this.filghtInfo.seat_infos) {
+                return;
+            }
+
+            let Totalprice = 0;
+            Totalprice = this.filghtInfo.seat_infos.org_settle_price;
+            // 是否购买保险
+            this.filghtInfo.insurances.forEach((item) => {
+                if (this.form.insurances.indexOf(item.id) !== -1) {
+                    Totalprice += item.price
+                }
+            })
+            
+            // 乘以人数
+            Totalprice = Totalprice*this.form.users.length
+            this.$store.commit("air/setTotalprice", Totalprice)
+            return '';
+        }
     }
 }
 </script>

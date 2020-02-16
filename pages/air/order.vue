@@ -5,22 +5,21 @@
             <OrderForm></OrderForm>
 
             <!-- 侧边栏 -->
-            <div class="aside">
-                          
-            </div>
+            <OrderAside :data="$store.state.air.orderDetail"></OrderAside>
         </el-row>
     </div>
 </template>
 
 <script>
 import OrderForm from "@/components/air/orderForm.vue";
+import OrderAside from "@/components/air/OrderAside.vue";
 export default {
     data () {
         return {
             
         }
     },
-    components: { OrderForm },
+    components: { OrderForm, OrderAside },
     mounted () {
         // console.log(this.$route.query)
         // let airsid = this.$route.query.id
