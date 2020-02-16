@@ -115,6 +115,10 @@ export default {
         
         // 发送手机验证码
         handleSendCaptcha(){
+            if (!this.form.contactPhone) {
+                this.$message.error('请输入手机号')
+                return;
+            }
             this.$store.dispatch('user/getCaptcha', this.form.contactPhone).then((res) => {
                 // console.log(res)
                 this.$message.success(`验证码为： ${res.data.code}`)
@@ -133,7 +137,79 @@ export default {
 
         // 提交订单
         handleSubmit(){
-            console.log(this.form)
+            // 先验证表单内容
+            // 自定义验证
+            let rules = {
+                //验证乘机人信息
+                userInfo: {
+                    // 错误信息
+                    errorMessage: '请输入乘机人信息',
+                    // 自定义验证函数,如果验证失败则返回false
+                    validator: () => {
+                        let valid = true;
+                        this.form.users.forEach((item) => {
+                            if (!item.username || !item.id) {
+                                valid = false
+                            }
+                        })
+                        return valid;
+                    }
+                },
+
+                // 验证联系人姓名
+                contactName: {
+                    errorMessage: '请填写联系人姓名',
+                    validator: () => {
+                        return !!this.form.contactName
+                    }
+                },
+
+                // 验证联系人手机号
+                contactPhone: {
+                    errorMessage: '请填写联系人号码',
+                    validator: () => {
+                        return !!this.form.contactPhone
+                    }
+                },
+
+                // 验证验证码
+                captcha: {
+                    errorMessage: '请填写验证码',
+                    validator: () => {
+                        return !!this.form.captcha
+                    }
+                }
+            }
+
+            // 先设定一个状态
+            let valid = true;
+            // 运行自定义校验函数
+            for (var i in rules) {
+                valid = rules[i].validator();
+                if (!valid) {
+                    this.$message.error(rules[i].errorMessage)
+                    return;
+                }
+            }
+            // 如果验证不通过，则不发送请求
+            if (!valid) {
+                return
+            }
+
+            // 发送请求
+            this.$axios({
+                url: '/airorders',
+                method: 'POST',
+                data: this.form,
+                // 设置请求头
+                headers: {
+                    // token前面加上`Bearer `，后面有一个空格的
+                    Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+                }
+            }).then((res) => {
+                console.log(res)
+            })
+            // console.log(this.form)
         }
     },
     mounted () {
